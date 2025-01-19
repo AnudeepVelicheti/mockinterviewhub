@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NewInterview } from "@/components/mock/NewInterview";
 import { PreviousInterviews } from "@/components/mock/PreviousInterviews";
 import { Recordings } from "@/components/mock/Recordings";
+import { Button } from "@/components/ui/button";
 
 const Mock = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Mock from "./pages/Mock";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/resume" element={<Dashboard />} />
-          <Route path="/mock" element={<Dashboard />} />
+          <Route path="/mock" element={<Mock />} />
           <Route path="/applications" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>

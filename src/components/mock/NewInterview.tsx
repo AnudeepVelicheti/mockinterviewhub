@@ -76,10 +76,10 @@ export const NewInterview = () => {
       <div className="space-y-6">
         <div className="h-1/2 bg-muted rounded-lg p-4">
           <div className="font-mono text-sm h-full overflow-auto">
-            // Code editor placeholder
-            function example() {"{"}
-              console.log("Code editor will be implemented here");
-            {"}"}
+            {`// Code editor placeholder
+function example() {
+  console.log("Code editor will be implemented here");
+}`}
           </div>
         </div>
         <div className="h-1/2 flex flex-col">
