@@ -2,26 +2,40 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 export const LoginForm = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual login logic
-    navigate("/dashboard");
+    
+    if (username === "user" && password === "test") {
+      toast({
+        title: "Success",
+        description: "Login successful!",
+      });
+      navigate("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid credentials. Use username: user, password: test",
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
       <div className="space-y-2">
         <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
       </div>
