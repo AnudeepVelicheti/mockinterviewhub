@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import Editor from "@monaco-editor/react";
 
 export const NewInterview = () => {
   const [hasPermissions, setHasPermissions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [transcript, setTranscript] = useState("");
+  const [code, setCode] = useState(`function example() {\n  // Write your code here\n  \n}`);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -66,6 +68,10 @@ export const NewInterview = () => {
     }
   };
 
+  const handleEditorChange = (value: string | undefined) => {
+    if (value) setCode(value);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
@@ -103,13 +109,21 @@ export const NewInterview = () => {
         </div>
       </div>
       <div className="space-y-6">
-        <div className="h-1/2 bg-muted rounded-lg p-4">
-          <div className="font-mono text-sm h-full overflow-auto">
-            {`// Code editor placeholder
-function example() {
-  console.log("Code editor will be implemented here");
-}`}
-          </div>
+        <div className="h-1/2 bg-muted rounded-lg overflow-hidden">
+          <Editor
+            height="100%"
+            defaultLanguage="javascript"
+            theme="vs-dark"
+            value={code}
+            onChange={handleEditorChange}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              lineNumbers: "on",
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+            }}
+          />
         </div>
         <div className="h-1/2 flex flex-col">
           <div className="flex-1 bg-muted rounded-lg p-4 mb-4 overflow-auto">
