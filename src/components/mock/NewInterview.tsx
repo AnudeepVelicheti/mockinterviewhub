@@ -60,17 +60,16 @@ export const NewInterview = () => {
   return (
     <div className="grid grid-cols-2 gap-6 h-[calc(100vh-10rem)]">
       <div className="space-y-6">
-        <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+        <div className="relative w-3/4 mx-auto aspect-video bg-black rounded-lg overflow-hidden">
           <video
             ref={videoRef}
             autoPlay
             playsInline
-            muted
             className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
-        <div className="relative aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-          <span className="text-muted-foreground">Interviewer Video Feed</span>
+        <div className="relative w-3/4 mx-auto aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center">
+          <span className="text-white">Interviewer Video Feed</span>
         </div>
       </div>
       <div className="space-y-6">
