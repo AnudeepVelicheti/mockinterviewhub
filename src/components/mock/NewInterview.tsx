@@ -21,12 +21,18 @@ export const NewInterview = () => {
         video: true,
         audio: true,
       });
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(error => {
+          console.error("Error playing video:", error);
+        });
       }
+      
       setHasPermissions(true);
       setIsLoading(false);
     } catch (error) {
+      console.error("Permission error:", error);
       toast({
         variant: "destructive",
         title: "Permission Error",
