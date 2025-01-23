@@ -24,6 +24,7 @@ export const NewInterview = () => {
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.muted = true; // Mute to prevent feedback
         await videoRef.current.play().catch(error => {
           console.error("Error playing video:", error);
         });
@@ -71,7 +72,8 @@ export const NewInterview = () => {
             ref={videoRef}
             autoPlay
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            muted
+            className="absolute inset-0 w-full h-full object-cover mirror-mode"
           />
         </div>
         <div className="relative w-3/4 mx-auto aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center">
