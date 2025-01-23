@@ -13,21 +13,43 @@ export const NewInterview = () => {
 
   useEffect(() => {
     requestPermissions();
+    return () => {
+      // Cleanup: stop all tracks when component unmounts
+      if (videoRef.current?.srcObject instanceof MediaStream) {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
+    };
   }, []);
 
   const requestPermissions = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      const constraints = {
+        video: {
+          facingMode: "user", // This ensures we use the front-facing camera
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.muted = true; // Mute to prevent feedback
-        await videoRef.current.play().catch(error => {
+        
+        // Ensure video is playing
+        try {
+          await videoRef.current.play();
+          console.log("Video playback started successfully");
+        } catch (error) {
           console.error("Error playing video:", error);
-        });
+          throw error;
+        }
       }
       
       setHasPermissions(true);
