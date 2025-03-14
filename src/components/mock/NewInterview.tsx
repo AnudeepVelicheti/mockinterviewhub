@@ -1,105 +1,13 @@
 
-import { useState, useEffect, useRef } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send } from "lucide-react";
-import Editor from "@monaco-editor/react";
+import { VideoDisplay } from "./VideoDisplay";
+import { CodeEditor } from "./CodeEditor";
+import { ChatInterface } from "./ChatInterface";
+import { useMediaStream } from "@/hooks/useMediaStream";
 
 export const NewInterview = () => {
-  const [hasPermissions, setHasPermissions] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [transcript, setTranscript] = useState("");
-  const [code, setCode] = useState(`function example() {\n  // Write your code here\n  \n}`);
-  const [sendingCode, setSendingCode] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    requestPermissions();
-    return () => {
-      // Cleanup: stop all tracks when component unmounts
-      if (videoRef.current?.srcObject instanceof MediaStream) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
-
-  const requestPermissions = async () => {
-    try {
-      const constraints = {
-        video: {
-          facingMode: "user", // This ensures we use the front-facing camera
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.muted = true; // Mute to prevent feedback
-        
-        // Ensure video is playing
-        try {
-          await videoRef.current.play();
-          console.log("Video playback started successfully");
-        } catch (error) {
-          console.error("Error playing video:", error);
-          throw error;
-        }
-      }
-      
-      setHasPermissions(true);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Permission error:", error);
-      toast({
-        variant: "destructive",
-        title: "Permission Error",
-        description:
-          "Please allow camera and microphone access to start the interview",
-      });
-      setIsLoading(false);
-    }
-  };
-
-  const handleEditorChange = (value: string | undefined) => {
-    if (value) setCode(value);
-  };
-
-  const handleSendCode = async () => {
-    // Set loading state
-    setSendingCode(true);
-    
-    try {
-      // Here you would integrate with your backend API
-      // For now, we'll simulate a backend call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success toast
-      toast({
-        title: "Code Submitted",
-        description: "Your code has been successfully sent to the interviewer",
-      });
-    } catch (error) {
-      // Show error toast
-      toast({
-        variant: "destructive",
-        title: "Submission Failed",
-        description: "Failed to send code. Please try again.",
-      });
-      console.error("Error sending code:", error);
-    } finally {
-      setSendingCode(false);
-    }
-  };
+  const { stream, hasPermissions, isLoading, requestPermissions } = useMediaStream();
 
   if (isLoading) {
     return (
@@ -123,80 +31,10 @@ export const NewInterview = () => {
 
   return (
     <div className="grid grid-cols-2 gap-6 h-[calc(100vh-10rem)]">
+      <VideoDisplay videoStream={stream} hasPermissions={hasPermissions} />
       <div className="space-y-6">
-        <div className="relative w-3/4 mx-auto aspect-video bg-black rounded-lg overflow-hidden">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover mirror-mode"
-          />
-        </div>
-        <div className="relative w-3/4 mx-auto aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center">
-          <span className="text-white">Interviewer Video Feed</span>
-        </div>
-      </div>
-      <div className="space-y-6">
-        <div className="h-1/2 bg-muted rounded-lg overflow-hidden relative">
-          <Editor
-            height="100%"
-            defaultLanguage="javascript"
-            theme="vs-dark"
-            value={code}
-            onChange={handleEditorChange}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              lineNumbers: "on",
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-            }}
-          />
-          <div className="absolute bottom-4 right-4">
-            <Button 
-              onClick={handleSendCode} 
-              disabled={sendingCode} 
-              className="gap-2"
-            >
-              {sendingCode ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              Send Code
-            </Button>
-          </div>
-        </div>
-        <div className="h-1/2 flex flex-col">
-          <div className="flex-1 bg-muted rounded-lg p-4 mb-4 overflow-auto">
-            <div className="space-y-4">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                <p className="text-sm">
-                  <span className="font-semibold">Interviewer:</span> Hello! Let's
-                  start with a simple coding question. Can you implement a function
-                  that reverses a string?
-                </p>
-              </div>
-              {transcript && (
-                <div className="bg-secondary p-3 rounded-lg">
-                  <p className="text-sm">
-                    <span className="font-semibold">You:</span> {transcript}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <Textarea
-              placeholder="Type your response..."
-              value={transcript}
-              onChange={(e) => setTranscript(e.target.value)}
-              className="flex-1"
-            />
-            <Button>Send</Button>
-          </div>
-        </div>
+        <CodeEditor initialCode={`function example() {\n  // Write your code here\n  \n}`} />
+        <ChatInterface />
       </div>
     </div>
   );
