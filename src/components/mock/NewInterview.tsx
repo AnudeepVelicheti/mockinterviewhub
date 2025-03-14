@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import Editor from "@monaco-editor/react";
 
 export const NewInterview = () => {
@@ -10,6 +11,7 @@ export const NewInterview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [transcript, setTranscript] = useState("");
   const [code, setCode] = useState(`function example() {\n  // Write your code here\n  \n}`);
+  const [sendingCode, setSendingCode] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -72,6 +74,33 @@ export const NewInterview = () => {
     if (value) setCode(value);
   };
 
+  const handleSendCode = async () => {
+    // Set loading state
+    setSendingCode(true);
+    
+    try {
+      // Here you would integrate with your backend API
+      // For now, we'll simulate a backend call with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success toast
+      toast({
+        title: "Code Submitted",
+        description: "Your code has been successfully sent to the interviewer",
+      });
+    } catch (error) {
+      // Show error toast
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: "Failed to send code. Please try again.",
+      });
+      console.error("Error sending code:", error);
+    } finally {
+      setSendingCode(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
@@ -109,7 +138,7 @@ export const NewInterview = () => {
         </div>
       </div>
       <div className="space-y-6">
-        <div className="h-1/2 bg-muted rounded-lg overflow-hidden">
+        <div className="h-1/2 bg-muted rounded-lg overflow-hidden relative">
           <Editor
             height="100%"
             defaultLanguage="javascript"
@@ -124,6 +153,20 @@ export const NewInterview = () => {
               scrollBeyondLastLine: false,
             }}
           />
+          <div className="absolute bottom-4 right-4">
+            <Button 
+              onClick={handleSendCode} 
+              disabled={sendingCode} 
+              className="gap-2"
+            >
+              {sendingCode ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              Send Code
+            </Button>
+          </div>
         </div>
         <div className="h-1/2 flex flex-col">
           <div className="flex-1 bg-muted rounded-lg p-4 mb-4 overflow-auto">
